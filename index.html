@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Apple</title>
     <link href="style/output.css" rel="stylesheet">
 
 </head>
@@ -32,36 +32,43 @@
         <p class="text-xl text-gray-600 mb-12">Explore nossa seleção de produtos Apple de alta qualidade.</p>
     </div>
     <div class="w-full h-screen flex bg-white justify-center items-center" id="produtos">
-        <div class="w-full flex justify-center items-start gap-10">
-            <img src="Assets/iphone17promax3cores.png" alt="iPhone 17 Pro Max" class="h-160 w-auto mt-10 ">
+        <div class="w-full flex justify-center items-center gap-20">
+            <div class="relative h-160 w-[500px] mt-10 overflow-hidden">
+                <img id="default" src="Assets/iphone17promax3cores.png"
+                    class="absolute inset-0 h-full w-full object-contain">
 
-            <div class="flex flex-col mt-20 w-1/3 shadow-lg p-8 rounded-lg border border-gray-200">
-                <p class="mb-6 text-gray-800 text-1xl">
+                <img id="laranja" src="Assets/iphone17promaxlaranja.png"
+                    class="absolute inset-0 h-full w-full object-contain opacity-0">
+                <img id="azul" src="Assets/iphone17promaxazul.png"
+                    class="absolute inset-0 h-full w-full object-contain opacity-0">
+                <img id="prateado" src="Assets/iphone17promaxbranco.png"
+                    class="absolute inset-0 h-full w-full object-contain opacity-0">
+            </div>
+
+            <div class="flex flex-col w-1/3 shadow-2xl p-8 rounded-2xl border border-gray-100 bg-white">
+                <p class="mb-6 text-black text-4xl font-black">iPhone 17 Pro Max</p>
+                <p class="mb-8 text-justify text-gray-600 leading-relaxed">
                     O iPhone 17 Pro Max é uma central de produtividade, cinema e jogos, unindo o chip A19 Pro e 12 GB de
-                    RAM
-                    para uma experiência de IA sem precedentes. Com tela de 6,9 polegadas e sistema de resfriamento
-                    avançado, ele oferece performance máxima e fotografia profissional com suas três câmeras de 48 MP.
-                    Tudo
-                    isso com bateria para 37 horas e acabamento em Titânio Grau 5, disponível nas cores:
+                    RAM para uma experiência de IA sem precedentes. Com tela de 6,9 polegadas e sistema de resfriamento
+                    avançado, ele oferece performance máxima.
                 </p>
 
-                <div class="flex flex-row gap-6">
-                    <button
-                        class="bg-orange-500 text-white px-4 py-2 rounded-4xl text-sm hover:opacity-70 transition duration-200 font-bold"
-                        id="Laranja-cósmico">Laranja-cósmico</button>
-                    <button
-                        class="bg-blue-950 text-white px-4 py-2 rounded-4xl text-sm hover:opacity-70 transition duration-200 font-bold"
-                        id="Azul-intenso">Azul-intenso</button>
-                    <button
-                        class="bg-gray-300 text-black px-4 py-2 rounded-4xl text-sm hover:opacity-70 transition duration-200 font-bold"
-                        id="Prateado">Prateado</button>
+                <div class="flex flex-row gap-4">
+                    <button id="Laranja-cósmico"
+                        class="bg-orange-500 text-white px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Laranja-cósmico</button>
+                    <button id="Azul-intenso"
+                        class="bg-blue-950 text-white px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Azul-intenso</button>
+                    <button id="Prateado"
+                        class="bg-gray-200 text-black px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Prateado</button>
                 </div>
             </div>
         </div>
     </div>
+    </div>
     <div>
 
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="script.js"></script>
 </body>
 
