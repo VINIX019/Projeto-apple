@@ -1,75 +1,422 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple</title>
-    <link href="style/output.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nébula — Linha X1</title>
+<meta name="description" content="Nébula X1 — linha de smartphones. Projeto de demonstração.">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0a0b14',
+          surface: '#151726',
+          surface2: '#1c1f30',
+          line: '#262a3d',
+          ink: '#f2f2f7',
+          dim: '#9a9fb0',
+          purple: '#9b6dff',
+          pink: '#ff6bcb',
+        },
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          sans: ['Inter', '-apple-system', 'sans-serif'],
+        },
+      },
+    },
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#0a0b14; }
+
+  .blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    opacity: 0.45;
+    z-index: 0;
+  }
+  .blob-1 { width: 420px; height: 420px; background: #9b6dff; top: -100px; left: -80px; animation: drift1 16s ease-in-out infinite alternate; }
+  .blob-2 { width: 380px; height: 380px; background: #ff6bcb; bottom: -120px; right: -60px; animation: drift2 18s ease-in-out infinite alternate; }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(60px, 40px) scale(1.15); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-50px, -30px) scale(1.1); } }
+  @media (prefers-reduced-motion: reduce) { .blob-1, .blob-2 { animation: none; } }
+
+  .phone { position: absolute; width: 200px; opacity: 0; transform: translateY(14px) scale(0.97); transition: opacity 0.5s ease, transform 0.5s ease; pointer-events: none; }
+  .phone.is-active { opacity: 1; transform: translateY(0) scale(1); }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .bump { animation: bump 0.35s ease; }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #0a0b14; }
+  ::-webkit-scrollbar-thumb { background: #262a3d; border-radius: 6px; }
+</style>
 </head>
 
-<body>
-    <header
-        class="w-full grid grid-cols-3 items-center z-40 bg-gray-800 border-b border-gray-300 shadow-sm h-20 px-8 fixed top-0">
-        <div class="justify-self-start">
-            <a href="#hero"><img class="h-12 w-12" src="Assets/logo.png" alt=""></a>
+<body class="bg-bg text-ink font-sans antialiased overflow-x-hidden">
+
+  <!-- ================= HEADER ================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-4 bg-bg/70 backdrop-blur-md border-b border-line">
+    <a href="#hero" class="font-display font-bold text-xl bg-gradient-to-r from-purple to-pink bg-clip-text text-transparent">Nébula</a>
+
+    <nav class="hidden sm:flex items-center gap-8 text-sm text-dim">
+      <a href="#produtos" class="hover:text-ink transition-colors">Produtos</a>
+      <a href="#recursos" class="hover:text-ink transition-colors">Recursos</a>
+      <a href="#comparativo" class="hover:text-ink transition-colors">Comparar</a>
+      <a href="#sobre" class="hover:text-ink transition-colors">Quem somos</a>
+    </nav>
+
+    <button id="cart-btn" class="relative flex items-center gap-2 border border-line rounded-full px-4 py-2 text-sm hover:border-purple/60 transition-colors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+      <span class="hidden md:inline">Carrinho</span>
+      <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-purple to-pink text-bg text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+    </button>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 overflow-hidden">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="relative z-10 max-w-2xl">
+      <div class="font-display text-xs tracking-widest uppercase text-dim mb-4">Linha Nébula X1</div>
+      <h1 class="font-display font-bold leading-tight text-[clamp(32px,6vw,58px)] mb-5">
+        Três aparelhos.<br>Uma nebulosa.
+      </h1>
+      <p class="text-dim text-lg max-w-lg mx-auto mb-8">
+        Do X1 ao X1 Pro Max — performance densa, tela viva, e um design que parece
+        ter sido formado por uma nuvem de estrelas.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#produtos" class="font-sans font-semibold text-sm px-7 py-3 rounded-full bg-gradient-to-r from-purple to-pink text-bg hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple/30 transition">Ver a linha</a>
+        <a href="#comparativo" class="font-sans font-semibold text-sm px-7 py-3 rounded-full border border-line hover:border-purple/60 transition">Comparar modelos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECURSOS ================= -->
+  <section id="recursos" class="reveal py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <div class="font-display text-xs tracking-widest uppercase text-dim mb-3">Recursos</div>
+        <h2 class="font-display font-bold text-3xl md:text-4xl">O que toda a linha carrega</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-surface border border-line rounded-2xl p-6 hover:border-purple/40 transition-colors">
+          <div class="w-10 h-10 rounded-full bg-purple/15 flex items-center justify-center mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>
+          </div>
+          <h3 class="font-display font-semibold mb-2">Chip Cosmos</h3>
+          <p class="text-sm text-dim leading-relaxed">Arquitetura própria, otimizada pra IA embarcada e uso pesado sem esquentar.</p>
         </div>
 
-        <section class="justify-self-center flex items-center py-4 gap-6">
-            <a href="#produtos"
-                class="font-bold text-white text-2xl hover:text-gray-200 transition-colors duration-200">Produtos</a>
-            <a href="#quem-somos"
-                class="font-bold text-white text-2xl hover:text-gray-200 transition-colors duration-200">Quem somos</a>
-            <a href="#contato"
-                class="font-bold text-white text-2xl hover:text-gray-200 transition-colors duration-200">Contato</a>
-        </section>
-        <div class="justify-self-end"></div>
-    </header>
-    <div class="w-full h-screen flex flex-col justify-center items-center bg-gray-100 " id="hero">
-        <img src="Assets/logo.png" alt="">
-        <h1 class="text-5xl font-bold text-gray-800 mb-8">Bem-vindo à nossa loja de produtos Apple!</h1>
-        <p class="text-xl text-gray-600 mb-12">Explore nossa seleção de produtos Apple de alta qualidade.</p>
-    </div>
-    <div class="w-full h-screen flex bg-white justify-center items-center" id="produtos">
-        <div class="w-full flex justify-center items-center gap-20">
-            <div class="relative h-160 w-[500px] mt-10 overflow-hidden">
-                <img id="default" src="Assets/iphone17promax3cores.png"
-                    class="absolute inset-0 h-full w-full object-contain">
-
-                <img id="laranja" src="Assets/iphone17promaxlaranja.png"
-                    class="absolute inset-0 h-full w-full object-contain opacity-0">
-                <img id="azul" src="Assets/iphone17promaxazul.png"
-                    class="absolute inset-0 h-full w-full object-contain opacity-0">
-                <img id="prateado" src="Assets/iphone17promaxbranco.png"
-                    class="absolute inset-0 h-full w-full object-contain opacity-0">
-            </div>
-
-            <div class="flex flex-col w-1/3 shadow-2xl p-8 rounded-2xl border border-gray-100 bg-white">
-                <p class="mb-6 text-black text-4xl font-black">iPhone 17 Pro Max</p>
-                <p class="mb-8 text-justify text-gray-600 leading-relaxed">
-                    O iPhone 17 Pro Max é uma central de produtividade, cinema e jogos, unindo o chip A19 Pro e 12 GB de
-                    RAM para uma experiência de IA sem precedentes. Com tela de 6,9 polegadas e sistema de resfriamento
-                    avançado, ele oferece performance máxima.
-                </p>
-
-                <div class="flex flex-row gap-4">
-                    <button id="Laranja-cósmico"
-                        class="bg-orange-500 text-white px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Laranja-cósmico</button>
-                    <button id="Azul-intenso"
-                        class="bg-blue-950 text-white px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Azul-intenso</button>
-                    <button id="Prateado"
-                        class="bg-gray-200 text-black px-6 py-3 rounded-full text-xs hover:scale-105 transition transform font-bold shadow-md">Prateado</button>
-                </div>
-            </div>
+        <div class="bg-surface border border-line rounded-2xl p-6 hover:border-purple/40 transition-colors">
+          <div class="w-10 h-10 rounded-full bg-pink/15 flex items-center justify-center mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6bcb" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <h3 class="font-display font-semibold mb-2">Câmera adaptável</h3>
+          <p class="text-sm text-dim leading-relaxed">Estabilização avançada e ajuste automático de luz em qualquer cenário.</p>
         </div>
-    </div>
-    </div>
-    <div>
 
+        <div class="bg-surface border border-line rounded-2xl p-6 hover:border-purple/40 transition-colors">
+          <div class="w-10 h-10 rounded-full bg-purple/15 flex items-center justify-center mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg>
+          </div>
+          <h3 class="font-display font-semibold mb-2">Bateria de sobra</h3>
+          <p class="text-sm text-dim leading-relaxed">Autonomia pensada pro dia inteiro, do primeiro ao último uso.</p>
+        </div>
+
+        <div class="bg-surface border border-line rounded-2xl p-6 hover:border-purple/40 transition-colors">
+          <div class="w-10 h-10 rounded-full bg-pink/15 flex items-center justify-center mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6bcb" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3 class="font-display font-semibold mb-2">Tela adaptável</h3>
+          <p class="text-sm text-dim leading-relaxed">Brilho e taxa de atualização que se ajustam ao que está na tela.</p>
+        </div>
+      </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="script.js"></script>
+  </section>
+
+  <!-- ================= PRODUTOS ================= -->
+  <section id="produtos" class="reveal py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-10">
+        <div class="font-display text-xs tracking-widest uppercase text-dim mb-3">Escolha seu modelo</div>
+        <h2 class="font-display font-bold text-3xl md:text-4xl">A linha X1</h2>
+      </div>
+
+      <!-- seletor de modelo -->
+      <div class="flex justify-center gap-2 mb-14 flex-wrap" id="model-tabs">
+        <button data-model="x1" class="model-tab px-5 py-2.5 rounded-full text-sm font-semibold border border-line hover:border-purple/60 transition">Nébula X1</button>
+        <button data-model="x1pro" class="model-tab px-5 py-2.5 rounded-full text-sm font-semibold border border-line hover:border-purple/60 transition">Nébula X1 Pro</button>
+        <button data-model="x1promax" class="model-tab px-5 py-2.5 rounded-full text-sm font-semibold border border-line hover:border-purple/60 transition">Nébula X1 Pro Max</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+        <!-- palco do aparelho -->
+        <div class="relative h-[420px] flex items-center justify-center">
+          <div class="absolute w-64 h-64 rounded-full bg-purple/20 blur-3xl"></div>
+
+          <svg id="phone-default" class="phone is-active" viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="6" width="200" height="448" rx="42" fill="none" stroke="#3a3f57" stroke-width="2.5" stroke-dasharray="7 7"/>
+            <rect x="95" y="24" width="30" height="7" rx="3.5" fill="#3a3f57"/>
+            <text x="110" y="240" text-anchor="middle" fill="#5c6280" font-size="12" font-family="Inter, sans-serif">escolha uma cor</text>
+          </svg>
+
+          <svg id="phone-laranja" class="phone" viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="gL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e85d1f"/></linearGradient></defs>
+            <rect x="10" y="6" width="200" height="448" rx="42" fill="url(#gL)"/>
+            <rect x="20" y="16" width="180" height="428" rx="34" fill="#00000014"/>
+            <rect x="95" y="24" width="30" height="7" rx="3.5" fill="#00000030"/>
+            <circle cx="110" cy="27.5" r="3" fill="#00000045"/>
+          </svg>
+
+          <svg id="phone-azul" class="phone" viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a3a8c"/><stop offset="1" stop-color="#141d4d"/></linearGradient></defs>
+            <rect x="10" y="6" width="200" height="448" rx="42" fill="url(#gA)"/>
+            <rect x="20" y="16" width="180" height="428" rx="34" fill="#ffffff0f"/>
+            <rect x="95" y="24" width="30" height="7" rx="3.5" fill="#ffffff25"/>
+            <circle cx="110" cy="27.5" r="3" fill="#ffffff35"/>
+          </svg>
+
+          <svg id="phone-prateado" class="phone" viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="gP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8eaf0"/><stop offset="1" stop-color="#b6bac8"/></linearGradient></defs>
+            <rect x="10" y="6" width="200" height="448" rx="42" fill="url(#gP)"/>
+            <rect x="20" y="16" width="180" height="428" rx="34" fill="#ffffff30"/>
+            <rect x="95" y="24" width="30" height="7" rx="3.5" fill="#00000020"/>
+            <circle cx="110" cy="27.5" r="3" fill="#00000030"/>
+          </svg>
+        </div>
+
+        <!-- painel de especificações -->
+        <div>
+          <h3 id="model-name" class="font-display font-bold text-2xl md:text-3xl mb-2">Nébula X1</h3>
+          <p id="model-price" class="text-purple font-semibold text-lg mb-4">R$ 3.499</p>
+          <p id="model-desc" class="text-dim text-sm leading-relaxed mb-6">
+            Chip Cosmos X7, 6 GB de memória e tela de 6,1 polegadas — o ponto de partida
+            da linha, sem abrir mão da fluidez.
+          </p>
+
+          <div class="flex items-center gap-4 mb-8">
+            <div class="flex flex-col items-center gap-2">
+              <button class="swatch w-8 h-8 rounded-full border-2 border-transparent hover:scale-110 transition" style="background:#e85d1f" data-cor="laranja" aria-label="Laranja cósmico" aria-pressed="false"></button>
+              <span class="text-xs text-dim">Laranja</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <button class="swatch w-8 h-8 rounded-full border-2 border-transparent hover:scale-110 transition" style="background:#1e2a63" data-cor="azul" aria-label="Azul intenso" aria-pressed="false"></button>
+              <span class="text-xs text-dim">Azul</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <button class="swatch w-8 h-8 rounded-full border-2 border-transparent hover:scale-110 transition" style="background:#c7cbd6" data-cor="prateado" aria-label="Prateado" aria-pressed="false"></button>
+              <span class="text-xs text-dim">Prateado</span>
+            </div>
+          </div>
+
+          <button id="add-to-cart" class="font-sans font-semibold text-sm px-7 py-3 rounded-full bg-gradient-to-r from-purple to-pink text-bg hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple/30 transition">
+            Adicionar ao carrinho
+          </button>
+          <p id="cart-toast" class="text-xs text-purple mt-3 opacity-0 transition-opacity duration-300">Adicionado ao carrinho.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COMPARATIVO ================= -->
+  <section id="comparativo" class="reveal py-24 px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="font-display text-xs tracking-widest uppercase text-dim mb-3">Especificações</div>
+        <h2 class="font-display font-bold text-3xl md:text-4xl">Compare os modelos</h2>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-line">
+        <table class="w-full text-sm text-left border-collapse min-w-[560px]">
+          <thead>
+            <tr class="bg-surface text-dim">
+              <th class="p-4 font-medium">Especificação</th>
+              <th class="p-4 font-medium">Nébula X1</th>
+              <th class="p-4 font-medium">Nébula X1 Pro</th>
+              <th class="p-4 font-medium">Nébula X1 Pro Max</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            <tr><td class="p-4 text-dim">Chip</td><td class="p-4">Cosmos X7</td><td class="p-4">Cosmos X8</td><td class="p-4">Cosmos X9</td></tr>
+            <tr><td class="p-4 text-dim">Memória</td><td class="p-4">6 GB</td><td class="p-4">8 GB</td><td class="p-4">12 GB</td></tr>
+            <tr><td class="p-4 text-dim">Tela</td><td class="p-4">6,1"</td><td class="p-4">6,5"</td><td class="p-4">6,9"</td></tr>
+            <tr><td class="p-4 text-dim">Câmeras</td><td class="p-4">Dupla</td><td class="p-4">Tripla</td><td class="p-4">Tripla + estabilização avançada</td></tr>
+            <tr><td class="p-4 text-dim">Bateria</td><td class="p-4">Até 20h</td><td class="p-4">Até 24h</td><td class="p-4">Até 29h</td></tr>
+            <tr><td class="p-4 text-dim">Preço</td><td class="p-4">R$ 3.499</td><td class="p-4">R$ 4.299</td><td class="p-4">R$ 5.199</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DEPOIMENTOS ================= -->
+  <section id="depoimentos" class="reveal py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <div class="font-display text-xs tracking-widest uppercase text-dim mb-3">Depoimentos fictícios</div>
+        <h2 class="font-display font-bold text-3xl md:text-4xl">Quem já experimentou</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-surface border border-line rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple to-pink flex items-center justify-center font-display font-bold text-xs text-bg">MC</div>
+            <span class="text-sm font-medium">Mariana C.</span>
+          </div>
+          <p class="text-sm text-dim leading-relaxed">"A bateria do X1 Pro aguenta meu dia inteiro sem eu pensar duas vezes em carregar."</p>
+        </div>
+        <div class="bg-surface border border-line rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple to-pink flex items-center justify-center font-display font-bold text-xs text-bg">RT</div>
+            <span class="text-sm font-medium">Rafael T.</span>
+          </div>
+          <p class="text-sm text-dim leading-relaxed">"Troquei pro Pro Max pela câmera — a diferença na estabilização é bem perceptível."</p>
+        </div>
+        <div class="bg-surface border border-line rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple to-pink flex items-center justify-center font-display font-bold text-xs text-bg">JP</div>
+            <span class="text-sm font-medium">Julia P.</span>
+          </div>
+          <p class="text-sm text-dim leading-relaxed">"O X1 já resolve o que eu precisava, sem pagar por recurso que eu não ia usar."</p>
+        </div>
+      </div>
+      <p class="text-center text-xs text-dim mt-6">Depoimentos ilustrativos, criados pra este projeto de demonstração.</p>
+    </div>
+  </section>
+
+  <!-- ================= SOBRE ================= -->
+  <section id="sobre" class="reveal border-t border-line py-20 px-6">
+    <div class="max-w-xl mx-auto text-center">
+      <h3 class="font-display font-semibold text-xl mb-3">Quem somos</h3>
+      <p class="text-dim text-sm leading-relaxed">
+        A Nébula é uma marca fictícia criada como projeto de estudo — usada aqui pra
+        demonstrar interface de produto, comparação de modelos e microinterações,
+        sem depender de marca ou imagem de terceiros.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-line py-14 px-6">
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 text-sm">
+      <div>
+        <div class="font-display font-bold mb-3">Nébula</div>
+        <p class="text-dim text-xs leading-relaxed">Linha X1 de smartphones. Projeto de demonstração.</p>
+      </div>
+      <div>
+        <div class="text-dim text-xs font-semibold uppercase tracking-wider mb-3">Produtos</div>
+        <ul class="space-y-2 text-dim text-xs">
+          <li><a href="#produtos" class="hover:text-ink transition-colors">Nébula X1</a></li>
+          <li><a href="#produtos" class="hover:text-ink transition-colors">Nébula X1 Pro</a></li>
+          <li><a href="#produtos" class="hover:text-ink transition-colors">Nébula X1 Pro Max</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-dim text-xs font-semibold uppercase tracking-wider mb-3">Empresa</div>
+        <ul class="space-y-2 text-dim text-xs">
+          <li><a href="#sobre" class="hover:text-ink transition-colors">Quem somos</a></li>
+          <li><a href="#comparativo" class="hover:text-ink transition-colors">Comparar modelos</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-dim text-xs font-semibold uppercase tracking-wider mb-3">Redes</div>
+        <ul class="space-y-2 text-dim text-xs">
+          <li>Instagram</li>
+          <li>YouTube</li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-5xl mx-auto border-t border-line pt-6 text-center text-xs text-dim">
+      Nébula — marca fictícia de demonstração.
+    </div>
+  </footer>
+
+  <script>
+    // ---------- dados dos modelos ----------
+    const modelos = {
+      x1: { nome: 'Nébula X1', preco: 'R$ 3.499', desc: 'Chip Cosmos X7, 6 GB de memória e tela de 6,1 polegadas — o ponto de partida da linha, sem abrir mão da fluidez.' },
+      x1pro: { nome: 'Nébula X1 Pro', preco: 'R$ 4.299', desc: 'Chip Cosmos X8, 8 GB de memória e tela de 6,5 polegadas, com câmera tripla pra quem quer mais versatilidade.' },
+      x1promax: { nome: 'Nébula X1 Pro Max', preco: 'R$ 5.199', desc: 'Chip Cosmos X9, 12 GB de memória e tela de 6,9 polegadas — o topo da linha, com estabilização de câmera avançada.' },
+    };
+    let modeloAtivo = 'x1';
+    const cores = ['laranja', 'azul', 'prateado'];
+
+    // ---------- troca de modelo ----------
+    document.querySelectorAll('.model-tab').forEach((btn, i) => {
+      if (i === 0) btn.classList.add('border-purple', 'text-purple');
+      btn.addEventListener('click', () => {
+        modeloAtivo = btn.getAttribute('data-model');
+        document.querySelectorAll('.model-tab').forEach(b => b.classList.remove('border-purple', 'text-purple'));
+        btn.classList.add('border-purple', 'text-purple');
+
+        const m = modelos[modeloAtivo];
+        document.getElementById('model-name').textContent = m.nome;
+        document.getElementById('model-price').textContent = m.preco;
+        document.getElementById('model-desc').textContent = m.desc;
+
+        // volta pro estado neutro (sem cor escolhida) ao trocar de modelo
+        cores.forEach(c => document.getElementById('phone-' + c).classList.remove('is-active'));
+        document.getElementById('phone-default').classList.add('is-active');
+        document.querySelectorAll('.swatch').forEach(b => { b.classList.remove('selected'); b.style.borderColor = 'transparent'; b.setAttribute('aria-pressed', 'false'); });
+      });
+    });
+
+    // ---------- troca de cor ----------
+    document.querySelectorAll('.swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cor = btn.getAttribute('data-cor');
+        cores.forEach(c => document.getElementById('phone-' + c).classList.toggle('is-active', c === cor));
+        document.getElementById('phone-default').classList.remove('is-active');
+        document.querySelectorAll('.swatch').forEach(b => { b.style.borderColor = 'transparent'; b.setAttribute('aria-pressed', 'false'); });
+        btn.style.borderColor = '#f2f2f7';
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    // ---------- carrinho ----------
+    let carrinho = 0;
+    const cartCount = document.getElementById('cart-count');
+    const cartToast = document.getElementById('cart-toast');
+    document.getElementById('add-to-cart').addEventListener('click', () => {
+      carrinho++;
+      cartCount.textContent = carrinho;
+      cartCount.classList.remove('bump');
+      void cartCount.offsetWidth; // reinicia a animação
+      cartCount.classList.add('bump');
+
+      cartToast.style.opacity = '1';
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => { cartToast.style.opacity = '0'; }, 1800);
+    });
+
+    // ---------- reveal on scroll ----------
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
 </body>
-
 </html>
